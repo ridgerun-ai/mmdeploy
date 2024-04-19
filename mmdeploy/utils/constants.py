@@ -28,6 +28,7 @@ class Task(AdvancedEnum):
     POSE_DETECTION = 'PoseDetection'
     ROTATED_DETECTION = 'RotatedDetection'
     VIDEO_RECOGNITION = 'VideoRecognition'
+    VIDEO_DETECTION = 'VideoDetection'
     ModelCompress = 'ModelCompress'
     MONO_DETECTION = 'MonoDetection'
 
