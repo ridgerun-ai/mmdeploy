@@ -5,7 +5,6 @@ from torch import Tensor
 
 from mmdeploy.core import FUNCTION_REWRITER
 
-
 @FUNCTION_REWRITER.register_rewriter(
     'mmaction.models.recognizers.BaseRecognizer.forward')
 def base_recognizer__forward(self,

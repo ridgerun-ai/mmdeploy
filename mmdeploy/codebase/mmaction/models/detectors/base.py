@@ -10,18 +10,6 @@ from mmdeploy.core import FUNCTION_REWRITER, mark
 from mmdet.structures.bbox import bbox2roi
 import numpy as np
 
-#from mmdeploy.codebase.mmdet.models.detectors import two_stage
-
-import inspect
-def GRUNER():
-    frame = inspect.currentframe().f_back
-    file_name = frame.f_code.co_filename
-    function_name = frame.f_code.co_name
-    line_number = frame.f_lineno
-    print(f"===== GRUNER ===== : {file_name}:{function_name}:{line_number}")
-
-GRUNER()
-
 
 @FUNCTION_REWRITER.register_rewriter(
     'mmdet.models.detectors.BaseDetector.forward')
@@ -86,7 +74,6 @@ def __forward_impl(self, inputs, data_samples, mode, **kwargs):
     bbox_feats, global_feat = self.roi_head.bbox_roi_extractor(x, rois)
 
     if self.roi_head.with_shared_head:
-        GRUNER()
         bbox_feats = self.roi_head.shared_head(
             bbox_feats,
             feat=global_feat,

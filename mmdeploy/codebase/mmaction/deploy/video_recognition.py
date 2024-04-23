@@ -32,6 +32,7 @@ def process_model_config(model_cfg: mmengine.Config,
     """
     logger = get_root_logger()
     cfg = model_cfg.deepcopy()
+    print(cfg)
     test_pipeline_cfg = cfg.test_pipeline
     if 'Init' not in test_pipeline_cfg[0]['type']:
         test_pipeline_cfg = [dict(type='OpenCVInit')] + test_pipeline_cfg

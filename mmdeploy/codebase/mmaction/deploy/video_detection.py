@@ -18,15 +18,6 @@ from mmaction.utils import get_str_type
 from mmengine.structures import InstanceData
 
 
-import inspect
-def GRUNER():
-    frame = inspect.currentframe().f_back
-    file_name = frame.f_code.co_filename
-    function_name = frame.f_code.co_name
-    line_number = frame.f_lineno
-    print(f"===== GRUNER ===== : {file_name}:{function_name}:{line_number}")
-
-
 def process_model_config(model_cfg: mmengine.Config,
                          imgs: Union[Sequence[str], Sequence[np.ndarray]],
                          input_shape: Optional[Sequence[int]] = None):
@@ -42,7 +33,6 @@ def process_model_config(model_cfg: mmengine.Config,
     Returns:
         mmengine.Config: the model config after processing.
     """
-    GRUNER()
     logger = get_root_logger()
     cfg = model_cfg.deepcopy()
     
@@ -58,7 +48,6 @@ def process_model_config(model_cfg: mmengine.Config,
 
     # check whether input_shape is valid
     if input_shape is not None:
-        GRUNER()
         has_crop = False
         crop_size = -1
         has_resize = False
@@ -85,8 +74,6 @@ def process_model_config(model_cfg: mmengine.Config,
                 logger.error(
                     f'`input shape` should be equal to `scale`: {scale},'
                     f' but given: {input_shape}')
-    else:
-        GRUNER()
     return cfg
 
 @MMACTION_TASK.register_module(Task.VIDEO_DETECTION.value)
@@ -103,7 +90,7 @@ class VideoDetection(BaseTask):
     def __init__(self, model_cfg: mmengine.Config, deploy_cfg: mmengine.Config,
                  device: str):
         super(VideoDetection, self).__init__(model_cfg, deploy_cfg, device)
-        GRUNER()
+
 
     def build_backend_model(self,
                             model_files: Sequence[str] = None,
@@ -116,7 +103,6 @@ class VideoDetection(BaseTask):
         Returns:
             nn.Module: An initialized backend model.
         """
-        GRUNER()
         from .video_detection_model import build_video_detection_model
         data_preprocessor = self.model_cfg.model.data_preprocessor
         data_preprocessor.setdefault('type', 'mmaction.ActionDataPreprocessor')
@@ -145,7 +131,6 @@ class VideoDetection(BaseTask):
         Returns:
             tuple: (data, img), meta information for the input image and input.
         """
-        GRUNER()
         if isinstance(imgs, (list, tuple)):
             if not all(isinstance(img, str) for img in imgs):
                 raise AssertionError('imgs must be strings')
@@ -177,23 +162,16 @@ class VideoDetection(BaseTask):
         for img in imgs:
             data_ = dict(filename=img, label=-1, start_index=0, modality='RGB', fps=30, timestamp=timestamp, timestamp_start=timestamp)
             
-            GRUNER()
             data_ = test_pipeline(data_)
-            GRUNER()
             data.append(data_)
 
         data = pseudo_collate(data)
         if data_preprocessor is not None:
-            GRUNER()
             data = data_preprocessor(data, False)
-            GRUNER()
 
             action_data_sample = data['data_samples'][0]
             instance_data = InstanceData(bboxes=torch.tensor([[0.0, 0.0, 1.0, 1.0]]), scores=torch.tensor([[1.0]]))
             action_data_sample.proposals = instance_data
-            print("GRUNER: data: ", data)
-            #action_data_sample.scores = np.array([1])
-
             
             return data, data['inputs']
         else:
@@ -205,7 +183,6 @@ class VideoDetection(BaseTask):
         Return:
             str: the name of the model.
         """
-        GRUNER()
         assert 'type' in self.model_cfg.model, 'model config contains no type'
         name = self.model_cfg.model.type.lower()
         return name
@@ -228,7 +205,6 @@ class VideoDetection(BaseTask):
         Return:
             dict: Composed of the postprocess information.
         """
-        GRUNER()
         assert 'cls_head' in self.model_cfg.model
         assert 'num_classes' in self.model_cfg.model.cls_head
         logger = get_root_logger()
@@ -245,7 +221,6 @@ class VideoDetection(BaseTask):
         Return:
             dict: Composed of the preprocess information.
         """
-        GRUNER()
         input_shape = get_input_shape(self.deploy_cfg)
         model_cfg = process_model_config(self.model_cfg, [''], input_shape)
         pipeline = model_cfg.test_pipeline
