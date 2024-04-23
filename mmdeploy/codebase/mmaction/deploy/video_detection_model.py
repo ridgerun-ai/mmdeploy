@@ -18,9 +18,17 @@ from mmdeploy.utils import (Backend, get_backend, get_codebase_config,
 __BACKEND_MODEL = Registry('backend_video_detector')
 
 
+import inspect
+def GRUNER():
+    frame = inspect.currentframe().f_back
+    file_name = frame.f_code.co_filename
+    function_name = frame.f_code.co_name
+    line_number = frame.f_lineno
+    print(f"===== GRUNER ===== : {file_name}:{function_name}:{line_number}")
+
 @__BACKEND_MODEL.register_module('end2end')
 class End2EndModel(BaseBackendModel):
-    """End to end model for inference of video recognition.
+    """End to end model for inference of video detection.
 
     Args:
         backend (Backend): The backend enum, specifying backend type.
@@ -60,6 +68,7 @@ class End2EndModel(BaseBackendModel):
                 (e.g. '.onnx' for ONNX Runtime, '.param' and '.bin' for ncnn).
             device (str): A string specifying device type.
         """
+        GRUNER()
         output_names = self.output_names
         self.wrapper = BaseBackendModel._build_wrapper(
             backend=backend,
@@ -86,6 +95,8 @@ class End2EndModel(BaseBackendModel):
         Returns:
             list: A list contains predictions.
         """
+        GRUNER()
+        
         assert mode == 'predict', \
             'Backend model only support mode==predict,' f' but get {mode}'
 
@@ -93,6 +104,7 @@ class End2EndModel(BaseBackendModel):
             get_root_logger().warning(f'expect input device {self.device}'
                                       f' but get {inputs.device}.')
         inputs = inputs.to(self.device)
+        print("GRUNER: >>>>>>>>>>>>> ", self.input_name)
         cls_scores = self.wrapper({self.input_name:
                                    inputs})[self.output_names[0]]
 
@@ -107,7 +119,7 @@ class End2EndModel(BaseBackendModel):
         return data_samples
 
 
-def build_video_recognition_model(
+def build_video_detection_model(
         model_files: Sequence[str],
         model_cfg: Union[str, mmengine.Config],
         deploy_cfg: Union[str, mmengine.Config],
@@ -115,7 +127,7 @@ def build_video_recognition_model(
         data_preprocessor: Optional[Union[Config,
                                           BaseDataPreprocessor]] = None,
         **kwargs):
-    """Build video recognition model for different backends.
+    """Build video detection model for different backends.
 
     Args:
         model_files (Sequence[str]): Input model file(s).
@@ -130,6 +142,7 @@ def build_video_recognition_model(
     Returns:
         BaseBackendModel: Video detector for a configured backend.
     """
+    GRUNER()
     # load cfg if necessary
     deploy_cfg, model_cfg = load_config(deploy_cfg, model_cfg)
 
