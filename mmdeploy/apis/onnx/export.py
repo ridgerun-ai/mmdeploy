@@ -120,7 +120,10 @@ def export(model: torch.nn.Module,
             def wrap_forward(forward):
 
                 def wrapper(*arg, **kwargs):
-                    return forward(*arg, **kwargs)
+                    if len(arg) > 1:
+                        return forward([*arg], **kwargs)
+                    else:
+                        return forward(*arg, **kwargs)
 
                 return wrapper
 
