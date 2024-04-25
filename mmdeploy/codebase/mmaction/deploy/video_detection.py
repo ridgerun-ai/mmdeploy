@@ -169,11 +169,7 @@ class VideoDetection(BaseTask):
         if data_preprocessor is not None:
             data = data_preprocessor(data, False)
 
-            action_data_sample = data['data_samples'][0]
-            instance_data = InstanceData(bboxes=torch.tensor([[0.0, 0.0, 1.0, 1.0]]), scores=torch.tensor([[1.0]]))
-            action_data_sample.proposals = instance_data
-            
-            return data, data['inputs']
+            return data, (data['inputs'], torch.tensor([[[0.0, 0.0, 1.0, 1.0]]]))
         else:
             return data, BaseTask.get_tensor_from_input(data)
 
@@ -205,15 +201,7 @@ class VideoDetection(BaseTask):
         Return:
             dict: Composed of the postprocess information.
         """
-        assert 'cls_head' in self.model_cfg.model
-        assert 'num_classes' in self.model_cfg.model.cls_head
-        logger = get_root_logger()
-        logger.warning('use default top-k value 1')
-        num_classes = self.model_cfg.model.cls_head.num_classes
-        params = dict(topk=1, num_classes=num_classes)
-        postprocess = dict(type='BaseHead', params=params)
-        return postprocess
-
+        raise NotImplementedError('Not supported yet.')
 
     def get_preprocess(self, *args, **kwargs) -> Dict:
         """Get the preprocess information for SDK.
@@ -221,55 +209,7 @@ class VideoDetection(BaseTask):
         Return:
             dict: Composed of the preprocess information.
         """
-        input_shape = get_input_shape(self.deploy_cfg)
-        model_cfg = process_model_config(self.model_cfg, [''], input_shape)
-        pipeline = model_cfg.test_pipeline
-        data_preprocessor = self.model_cfg.model.data_preprocessor
-
-        lift = dict(type='Lift', transforms=[])
-        lift['transforms'].append(dict(type='LoadImageFromFile'))
-        transforms2index = {}
-        for i, trans in enumerate(pipeline):
-            transforms2index[trans['type']] = i
-        lift_key = [
-            'Resize', 'Normalize', 'TenCrop', 'ThreeCrop', 'CenterCrop'
-        ]
-        for key in lift_key:
-            if key == 'Normalize':
-                assert key not in transforms2index
-                mean = data_preprocessor.get('mean', [0, 0, 0])
-                std = data_preprocessor.get('std', [1, 1, 1])
-                trans = dict(type='Normalize', mean=mean, std=std, to_rgb=True)
-                lift['transforms'].append(trans)
-            if key in transforms2index:
-                index = transforms2index[key]
-                if key == 'Resize' and 'scale' in pipeline[index]:
-                    value = pipeline[index].pop('scale')
-                    if len(value) == 2 and value[0] == -1:
-                        value = value[::-1]
-                    pipeline[index]['size'] = value
-                lift['transforms'].append(pipeline[index])
-
-        meta_keys = [
-            'valid_ratio', 'flip', 'img_norm_cfg', 'filename', 'ori_shape',
-            'pad_shape', 'img_shape', 'flip_direction', 'scale_factor',
-            'ori_filename'
-        ]
-        other = []
-        must_key = ['FormatShape', 'PackActionInputs']
-        for key in must_key:
-            assert key in transforms2index
-            index = transforms2index[key]
-            if key == 'PackActionInputs':
-                if 'meta_keys' in pipeline[index]:
-                    meta_keys += pipeline[index]['meta_keys']
-                pipeline[index]['meta_keys'] = list(set(meta_keys))
-                pipeline[index]['keys'] = ['img']
-                pipeline[index]['type'] = 'Collect'
-            other.append(pipeline[index])
-
-        reorder = [lift, *other]
-        return reorder
+        raise NotImplementedError('Not supported yet.')
     
     def visualize(self,
                   image: str,
