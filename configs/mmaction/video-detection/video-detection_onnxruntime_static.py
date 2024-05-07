@@ -7,3 +7,5 @@ onnx_config = dict(
     input_names=['input', 'proposals'],
     output_names=['bboxes', 'scores']
 )
+
+num_proposals=10

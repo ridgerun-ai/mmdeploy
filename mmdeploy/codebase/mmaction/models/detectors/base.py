@@ -50,7 +50,7 @@ def base_detector__forward(self,
 
     # Head
     rpn_results_list = [
-        InstanceData(bboxes=tensor, scores=torch.Tensor([[1.0]]))
+        InstanceData(bboxes=tensor, scores=torch.Tensor([[1.0]]).repeat(tensor.shape[0], 1))
         for tensor in proposals
     ]
     

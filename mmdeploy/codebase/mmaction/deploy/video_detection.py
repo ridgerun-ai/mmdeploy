@@ -169,7 +169,8 @@ class VideoDetection(BaseTask):
         if data_preprocessor is not None:
             data = data_preprocessor(data, False)
 
-            return data, (data['inputs'], torch.tensor([[[0.0, 0.0, 1.0, 1.0]]]))
+            num_proposals = self.deploy_cfg['num_proposals']
+            return data, (data['inputs'], torch.tensor([[[0.0, 0.0, 1.0, 1.0]]]).repeat(1,num_proposals,1))
         else:
             return data, BaseTask.get_tensor_from_input(data)
 
